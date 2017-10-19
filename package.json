@@ -1,0 +1,26 @@
+{
+  "name": "meraki-quotes-v2-api",
+  "version": "1.0.0",
+  "description": "Meraki quotes v2 API",
+  "main": "index.js",
+  "repository": "https://github.com/guzmonne/meraki-quotes-v2",
+  "author": "Guzman Monne <guzmonne@hotmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "test": "API_URL=http://127.0.0.1:3000 jest --watch",
+    "upload": "./scripts/upload.sh",
+    "deploy": "./scripts/deploy.sh"
+  },
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "joi": "^11.3.4",
+    "lodash": "^4.17.4",
+    "njwt": "^0.4.0",
+    "uuid": "^3.1.0",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "jest": "^21.2.1",
+    "node-fetch": "^1.7.3"
+  }
+}

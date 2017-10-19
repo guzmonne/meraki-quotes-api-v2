@@ -1,0 +1,361 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Meraki Quotes v2 API
+EnvironmentVariables: &DEFAULT
+  SESSIONS_TABLE_NAME: ConappsSessions
+Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      DefinitionUri: swagger.yaml
+      StageName: Prod
+      Variables:
+        # NOTE: Before using this template, replace the <<region>> and <<account>> fields
+        #       in Lambda integration URI in the swagger file to region and accountId 
+        #       you are deploying to
+        LambdaFunctionName: !Ref LambdaFunction
+
+  # ---
+  # Meraki Quotes
+  # ---
+  MerakiQuotesIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiQuotes/index.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiQuotes
+      Events:
+        GetEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiQuotes
+            Method: GET
+
+  MerakiQuotesCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiQuotes/create.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiQuotes
+      Events:
+        PostEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiQuotes
+            Method: POST
+  
+  MerakiQuotesShow:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiQuotes/show.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiQuotes
+      Events:
+        ShowEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiQuotes/{key}
+            Method: GET
+
+  MerakiQuotesDestroy:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiQuotes/destroy.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiQuotes
+      Events:
+        DestroyEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiQuotes/{key}
+            Method: DELETE
+
+  MerakiQuotesUpdate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiQuotes/update.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiQuotes
+      Events:
+        PutEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiQuotes/{key}
+            Method: PUT
+  # ---
+  # Meraki Quotes
+  # ---
+  MerakiDevicesIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiDevices/index.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiDevices
+      Events:
+        GetEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiDevices
+            Method: GET
+
+  MerakiDevicesCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiDevices/create.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiDevices
+      Events:
+        PostEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiDevices
+            Method: POST
+  
+  MerakiDevicesShow:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiDevices/show.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiDevices
+      Events:
+        ShowEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiDevices/{key}
+            Method: GET
+
+  MerakiDevicesDestroy:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiDevices/destroy.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiDevices
+      Events:
+        DestroyEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiDevices/{key}
+            Method: DELETE
+
+  MerakiDevicesUpdate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: merakiDevices/update.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsMerakiDevices
+      Events:
+        PutEndpoint:
+          Type: Api
+          Properties:
+            Path: /merakiDevices/{key}
+            Method: PUT
+
+  UsersIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/index.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsUsers
+      Events:
+        GetEndpoint:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: GET
+  
+  UsersCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/create.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsUsers
+      Events:
+        PostEndpoint:
+          Type: Api
+          Properties:
+            Path: /users
+            Method: POST
+
+  UsersUpdate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/update.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsUsers
+      Events:
+        PostEndpoint:
+          Type: Api
+          Properties:
+            Path: /users/{key}
+            Method: PUT
+
+  UsersDestroy:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/destroy.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsUsers
+      Events:
+        Endpoint:
+          Type: Api
+          Properties:
+            Path: /users/{key}
+            Method: DELETE
+
+  UsersMe:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/me.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsUsers
+      Events:
+        Endpoint:
+          Type: Api
+          Properties:
+            Path: /users/me
+            Method: GET
+
+  UsersAuthChangePassword:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/changePassword.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsUsers
+      Events:
+        Endpoint:
+          Type: Api
+          Properties:
+            Path: /users/changePassword
+            Method: POST
+
+  UsersAuthLogin:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/login.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsUsers
+      Events:
+        Endpoint:
+          Type: Api
+          Properties:
+            Path: /users/login
+            Method: POST
+
+  UsersAuthVerify:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/verify.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsUsers
+      Events:
+        Endpoint:
+          Type: Api
+          Properties:
+            Path: /users/verify
+            Method: GET
+
+  UsersPermissionsIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/permissions/index.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBReadOnly
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsHelpers
+      Events:
+        Endpoint:
+          Type: Api
+          Properties:
+            Path: /users/permissions
+            Method: GET
+
+  UsersPermissionsUpdate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/permissions/create.handler
+      Runtime: nodejs6.10
+      Policies: AmazonDynamoDBFullAccess
+      Environment:
+        Variables:
+          <<: *DEFAULT
+          TABLE_NAME: ConappsHelpers
+      Events:
+        Endpoint:
+          Type: Api
+          Properties:
+            Path: /users/permissions
+            Method: POST

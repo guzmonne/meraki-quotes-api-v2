@@ -1,0 +1,5 @@
+#!/bin/bash
+
+aws lambda add-permission --function-name arn:aws:lambda:us-east-1:925638840915:function:meraki-quotes-v2-MerakiDevicesLambdaFunction-JH7QII5VM8XJ --source-arn 'arn:aws:execute-api:us-east-1:925638840915:bidl0m5656/*/*/merakiDevices/*' --principal apigateway.amazonaws.com --statement-id eb212af8-a9b4-469a-96c4-5853a63358dc --action lambda:InvokeFunction
+aws lambda add-permission --function-name arn:aws:lambda:us-east-1:925638840915:function:meraki-quotes-v2-MerakiQuotesLambdaFunction-18ZH4ACLLYV0B --source-arn 'arn:aws:execute-api:us-east-1:925638840915:bidl0m5656/*/*/merakiQuotes/*' --principal apigateway.amazonaws.com --statement-id eb212af8-a9b4-469a-96c4-5853a63358dc --action lambda:InvokeFunction
+aws lambda add-permission --function-name arn:aws:lambda:us-east-1:925638840915:function:meraki-quotes-v2-UsersLambdaFunction-1EMRFQCS01ZKG --source-arn 'arn:aws:execute-api:us-east-1:925638840915:bidl0m5656/*/*/users/*' --principal apigateway.amazonaws.com --statement-id eb212af8-a9b4-469a-96c4-5853a63358dc --action lambda:InvokeFunction

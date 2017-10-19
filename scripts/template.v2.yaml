@@ -1,0 +1,136 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Meraki quotes v2 API.
+Resources:
+
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: api
+      DefinitionUri: ./swagger.yaml
+
+  UsersIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/index.handler
+      Policies: AmazonDynamoDBFullAccess
+      Runtime: nodejs6.10
+      FunctionName: UsersIndex
+      Environment:
+        Variables:
+          SESSIONS_TABLE_NAME: ConappsSessions
+          TABLE_NAME: ConappsUsers
+      Events:
+        IndexRequest:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /users
+            Method: GET
+
+  UsersCreate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/create.handler
+      Policies: AmazonDynamoDBFullAccess
+      Runtime: nodejs6.10
+      FunctionName: UsersCreate
+      Environment:
+        Variables:
+          SESSIONS_TABLE_NAME: ConappsSessions
+          TABLE_NAME: ConappsUsers
+      Events:
+        CreateRequest:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /users
+            Method: POST
+
+  UsersShow:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/show.handler
+      Policies: AmazonDynamoDBFullAccess
+      Runtime: nodejs6.10
+      FunctionName: UsersShow
+      Environment:
+        Variables:
+          SESSIONS_TABLE_NAME: ConappsSessions
+          TABLE_NAME: ConappsUsers
+      Events:
+        ShowRequest:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /users/{key}
+            Method: GET
+
+  UsersUpdate:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/update.handler
+      Policies: AmazonDynamoDBFullAccess
+      Runtime: nodejs6.10
+      FunctionName: UsersUpdate
+      Environment:
+        Variables:
+          SESSIONS_TABLE_NAME: ConappsSessions
+          TABLE_NAME: ConappsUsers
+      Events:
+        UpdateRequest:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /users/{key}
+            Method: PUT
+
+  UsersDestroy:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/destroy.handler
+      Policies: AmazonDynamoDBFullAccess
+      Runtime: nodejs6.10
+      FunctionName: UsersDestroy
+      Environment:
+        Variables:
+          SESSIONS_TABLE_NAME: ConappsSessions
+          TABLE_NAME: ConappsUsers
+      Events:
+        UpdateRequest:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /users/{key}
+            Method: DELETE
+
+  UsersLogin:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: users/login.handler
+      Policies: AmazonDynamoDBFullAccess
+      Runtime: nodejs6.10
+      FunctionName: UsersLogin
+      Environment:
+        Variables:
+          SESSIONS_TABLE_NAME: ConappsSessions
+          TABLE_NAME: ConappsUsers
+      Events:
+        LoginRequest:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGatewayApi
+            Path: /users/login
+            Method: POST
+
+Outputs:
+  ApiUrl:
+    Description: URL of your API endpoint
+    Value: !Join
+      - ''
+      - - https://
+        - !Ref ApiGatewayApi
+        - '.execute-api.'
+        - !Ref 'AWS::Region'
+        - '.amazonaws.com/Prod'
