@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "aws-serverless-express": "latest",
+    "body-parser": "^1.18.2",
     "crypto": "^1.0.1",
     "express": "latest",
     "joi": "^11.3.4",

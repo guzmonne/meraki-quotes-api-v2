@@ -14,8 +14,8 @@ const schema = Joi.object().keys({
 	password: Joi.string().min(8).required(),
 });
 
-exports.handler = function(event, context, callback) {
-	const body = JSON.parse(event.body || '{}');
+exports.handler = modules.exports = (req, res) => {
+	const body = req.body;
 	const isValid = utils.isValid(schema, body);
 
 	if (isValid !== true) {
