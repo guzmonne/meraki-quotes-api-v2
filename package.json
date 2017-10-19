@@ -7,6 +7,7 @@
   "author": "Guzman Monne <guzmonne@hotmail.com>",
   "license": "MIT",
   "scripts": {
+    "serve": "export $(cat .env | xargs) && nodemon server.js",
     "test": "API_URL=http://127.0.0.1:3000 jest --watch",
     "upload": "./scripts/upload.sh",
     "deploy": "./scripts/deploy.sh"
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "jest": "^21.2.1",
-    "node-fetch": "^1.7.3"
+    "node-fetch": "^1.7.3",
+    "nodemon": "^1.12.1"
   }
 }

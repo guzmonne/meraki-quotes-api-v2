@@ -7,19 +7,19 @@ const utils = require('../modules/utils.js');
 const dynamo = require('../modules/aws.js').DynamoDB;
 
 const SessionsTableName = process.env.SESSIONS_TABLE_NAME;
-const UsersTableName = process.env.TABLE_NAME;
+const UsersTableName = process.env.USERS_TABLE_NAME;
 
 const schema = Joi.object().keys({
 	email: Joi.string().email().required(),
 	password: Joi.string().min(8).required(),
 });
 
-exports.handler = modules.exports = (req, res) => {
+exports.handler = module.exports = (req, res) => {
 	const body = req.body;
 	const isValid = utils.isValid(schema, body);
 
 	if (isValid !== true) {
-		callback(null, utils.createResponse(400, isValid));
+    res.status(400).json(isValid);
 		return;
 	};
 
@@ -57,12 +57,12 @@ exports.handler = modules.exports = (req, res) => {
 		return generateToken(user);
 	})
 	.then((session) => {
-		console.log('Created session.');
-		callback(null, utils.createResponse(200, session));
+    console.log('Created session.');
+    res.status(200).json(session);
 	})
 	.catch((err) => {
 		console.log(err.message);
-		callback(null, utils.createResponse(400, err));
+		res.status(400).json(err);
 	});
 };
 

@@ -14,6 +14,13 @@ Resources:
     Properties:
       Handler: index.handler
       Runtime: nodejs6.10
+      Environment:
+        Variables:
+          SESSIONS_TABLE_NAME: ConappsSessions
+          USERS_TABLE_NAME: ConappsUsers
+          HELPERS_TABLE_NAME: ConappsHelpers
+          MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotes
+          MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevices
       Role:
         Fn::ImportValue:
           !Join ['-', [!Ref 'ProjectId', !Ref 'AWS::Region', 'LambdaTrustRole']]
