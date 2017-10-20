@@ -110,7 +110,6 @@ Parameters:
           HELPERS_TABLE_NAME: !Ref ConappsHelpers
           MERAKI_QUOTES_TABLE_NAME: !Ref ConappsMerakiQuotes
           MERAKI_DEVICES_TABLE_NAME: !Ref ConappsMerakiDevices
-      Policies: APIGatewayLambdaExecRole
       Role:
         Fn::ImportValue:
           Fn::Join:
