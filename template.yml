@@ -9,97 +9,6 @@ Parameters:
     Description: Meraki Quotes API v2
 
 Resources:
-  ConappsUsers:
-    Type: "AWS::DynamoDB::Table"
-    Properties:
-      TableName: ConappsUsersV2
-      AttributeDefinitions: 
-        - 
-          AttributeName: "email"
-          AttributeType: "S"
-      KeySchema: 
-        - 
-          AttributeName: "email"
-          KeyType: "HASH"
-      ProvisionedThroughput: 
-        ReadCapacityUnits: "1"
-        WriteCapacityUnits: "1"
-
-  ConappsMerakiDevices:
-    Type: "AWS::DynamoDB::Table"
-    Properties:
-      TableName: ConappsMerakiDevicesV2
-      AttributeDefinitions: 
-        - 
-          AttributeName: "UserID"
-          AttributeType: "S"
-        - 
-          AttributeName: "createdAt"
-          AttributeType: "S"
-      KeySchema: 
-        - 
-          AttributeName: "UserID"
-          KeyType: "HASH"
-        - 
-          AttributeName: "createdAt"
-          KeyType: "RANGE"
-      ProvisionedThroughput: 
-        ReadCapacityUnits: "1"
-        WriteCapacityUnits: "1"
-
-  ConappsMerakiQuotes:
-    Type: "AWS::DynamoDB::Table"
-    Properties:
-      TableName: ConappsMerakiQuotesV2
-      AttributeDefinitions: 
-        - 
-          AttributeName: "Category"
-          AttributeType: "S"
-        - 
-          AttributeName: "PartNumber"
-          AttributeType: "S"
-      KeySchema: 
-        - 
-          AttributeName: "Category"
-          KeyType: "HASH"
-        - 
-          AttributeName: "PartNumber"
-          KeyType: "RANGE"
-      ProvisionedThroughput: 
-        ReadCapacityUnits: "1"
-        WriteCapacityUnits: "1"
-  
-  ConappsHelpers:
-    Type: "AWS::DynamoDB::Table"
-    Properties:
-      TableName: ConappsHelpersV2
-      AttributeDefinitions: 
-        - 
-          AttributeName: "helperName"
-          AttributeType: "S"
-      KeySchema: 
-        - 
-          AttributeName: "helperName"
-          KeyType: "HASH"
-      ProvisionedThroughput: 
-        ReadCapacityUnits: "1"
-        WriteCapacityUnits: "1"
-
-  ConappsSessions:
-    Type: "AWS::DynamoDB::Table"
-    Properties:
-      TableName: ConappsSessionsV2
-      AttributeDefinitions: 
-        - 
-          AttributeName: "jti"
-          AttributeType: "S"
-      KeySchema: 
-        - 
-          AttributeName: "jti"
-          KeyType: "HASH"
-      ProvisionedThroughput: 
-        ReadCapacityUnits: "1"
-        WriteCapacityUnits: "1"
 
   ExpressApp:
     Type: AWS::Serverless::Function
@@ -108,18 +17,12 @@ Resources:
       Runtime: nodejs6.10
       Environment:
         Variables:
-          SESSIONS_TABLE_NAME: ConappsSessionsV2
-          USERS_TABLE_NAME: ConappsUsersV2
-          HELPERS_TABLE_NAME: ConappsHelpersV2
-          MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotesV2
-          MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevicesV2
-      Role:
-        Fn::ImportValue:
-          Fn::Join:
-          - '-'
-          - - Ref: ProjectId
-            - Ref: AWS::Region
-            - LambdaTrustRole
+          SESSIONS_TABLE_NAME: ConappsSessions
+          USERS_TABLE_NAME: ConappsUsers
+          HELPERS_TABLE_NAME: ConappsHelpers
+          MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotes
+          MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevices
+      Role: AmazonDynamoDBFullAccess
       Events:
         ProxyApiRoot:
           Type: Api

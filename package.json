@@ -7,6 +7,7 @@
   "author": "Guzman Monne <guzmonne@hotmail.com>",
   "license": "MIT",
   "scripts": {
+    "validate": "./scripts/validate.sh",
     "serve": "export $(cat .env | xargs) && nodemon server.js",
     "test": "API_URL=http://127.0.0.1:3000 jest --watch",
     "upload": "./scripts/upload.sh",
