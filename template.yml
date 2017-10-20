@@ -8,6 +8,7 @@ Parameters:
     Type: String
     Description: Meraki Quotes API v2
 
+Resources:
   ConappsUsers:
     Type: "AWS::DynamoDB::Table"
     Properties: 
@@ -112,7 +113,11 @@ Parameters:
           MERAKI_DEVICES_TABLE_NAME: !Ref ConappsMerakiDevices
       Role:
         Fn::ImportValue:
-          !Join ['-', [!Ref 'ProjectId', !Ref 'AWS::Region', 'LambdaTrustRole']]
+          Fn::Join:
+          - '-'
+          - - Ref: ProjectId
+            - Ref: AWS::Region
+            - LambdaTrustRole
       Events:
         ProxyApiRoot:
           Type: Api
