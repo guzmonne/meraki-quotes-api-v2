@@ -3,7 +3,6 @@
 const AWS = require('aws-sdk');
 const Joi = require('joi');
 const get = require('lodash/get');
-const isFunction = require('lodash/isFunction');
 const crypto = require('crypto');
 
 const SES = new AWS.SES();
@@ -13,7 +12,7 @@ exports.createResponse = (statusCode, body) => ({
 	body: JSON.stringify(body),
 });
 
-exports.isValid = (schema, object, callback) => {
+exports.isValid = (schema, object, res) => {
   const result = Joi.validate(object, schema);
 
 	if (result.error) {
@@ -32,13 +31,13 @@ exports.isValid = (schema, object, callback) => {
 			})
     };
     
-    if (isFunction(callback)) {
-      callback(null, exports.createResponse(400, error));
+    if (res) {
+      res.status(400).json(error);
       return false;
     }
 
     return error;
-	}
+  }
 
 	return true;
 };
@@ -72,7 +71,7 @@ exports.UnauthorizedError = function (message) {
 
 exports.IncorrectPasswordError = function (message){
 	this.name = 'IncorrectPassword';
-	this.message = message || 'The given password is incorrect.';
+	this.message = message || 'The password is incorrect.';
 	this.stack = (new Error()).stack;
 }
 

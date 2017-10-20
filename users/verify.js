@@ -5,22 +5,18 @@ const get = require('lodash/get');
 const dynamo = require('../modules/aws.js').DynamoDB;
 const utils = require('../modules/utils.js');
 
-const TABLE_NAME = process.env.TABLE_NAME;
+const TABLE_NAME = process.env.USERS_TABLE_NAME;
 
 const schema = Joi.object().keys({
 	email: Joi.string().email().required(),
 	verifyToken: Joi.string().required(),
 });
 
-exports.handler = function(event, context, callback) {
-	const query = event.queryStringParameters;
-	const isValid = utils.isValid(schema, query);
-
-	if (isValid !== true) {
-		callback(null, utils.createResponse(400, isValid));
-		return;
-	};
-
+exports = module.exports = (req, res) => {
+	const query = req.query;
+  
+  if (utils.isValid(schema, query, res) === false) return;
+  
 	const email = query.email;
 
 	dynamo.get({
@@ -34,27 +30,30 @@ exports.handler = function(event, context, callback) {
 		const verifyToken = get(data, 'Item.verifyToken');
 
 		if (verified === true) {
-			console.log(`User ${email} has already been verified.`);
-			callback(null, utils.createResponse(400, {
+      const message = `User ${email} has already been verified.`
+      console.log(message);
+      res.status(400).json({
 				name: 'UserIsAlreadyVerified',
-				message: 'User has already been verified.'
-			}));
+				message,
+			})
 		}
 
 		if (verifyToken === undefined) {
-			console.log('The "verifyToken" value us undefined');
-			callback(null, utils.createResponse(400, {
+      const message = 'The stored verifyToken value is undefined.'
+			console.log(message);
+			res.status(400).json({
 				name: 'VerifyTokenIsUndefined',
-				message: 'The stored verifyToken value is undefined.'
-			}));
+				message,
+			});
 		}
 
 		if (verifyToken !== query.verifyToken) {
-			console.log('Verification token doesn\'t match.');
-			callback(null, utils.createResponse(400, {
+      const messsage = 'Verification token doesn\'t match.';
+      console.log(message);
+			res.status(400).json({
 				name: 'VerificationTokenMismatch',
-				message: 'The verifyToken provided is invalid',
-			}));
+				message,
+			});
 		}
 
 		console.log('Verification token match.');
@@ -74,11 +73,14 @@ exports.handler = function(event, context, callback) {
 		}).promise();
 	})
 	.then((data) => {
-		console.log('User verified.');
-		callback(null, utils.createResponse(202));
+    console.log('User verified.');
+    res.status(202).send();
 	})
-	.catch(err => {
-		console.log(err.message);
-		callback(null, utils.createResponse(400, err));
+	.catch(error => {
+		console.log(error.message);
+		res.status(400).json({
+      name: error.name,
+      message: error.message,
+    })
 	})
 }

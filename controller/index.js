@@ -3,28 +3,31 @@
 const utils = require('../modules/utils.js');
 const dynamo = require('../modules/aws.js').DynamoDB;
 
-exports = module.exports = (config) => (event, context, callback) => {
-  const options = event.options;
+exports = module.exports = (config) => (req, res) => {
+  const query = req.query;
   
   const params = {
-    TableName: process.env.TABLE_NAME,
-    Limit: options.limit,
+    TableName: config.tableName,
+    Limit: query.limit,
   }
 
   if (config.attributesToGet)
     params.AttributesToGet = config.attributesToGet;
 
-  if (options.offset) 
-    params.ExclusiveStartKey = options.offset;
+  if (query.offset) 
+    params.ExclusiveStartKey = query.offset;
 
   dynamo.scan(params)
   .promise()
   .then((data) => {
     console.log(`Got ${config.type} list.`);
-    callback(null, utils.createResponse(200, data.Items));
+    res.status(200).json(data.Items)
   })
-  .catch(err => {
-    console.log(err.message);
-    callback(null, utils.createResponse(400, err));
+  .catch(error => {
+    console.log(error.message);
+    res.status(400).json({
+      name: error.name,
+      message: error.message,
+    })
   });
 }

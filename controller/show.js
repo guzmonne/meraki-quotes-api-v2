@@ -4,15 +4,20 @@ const isEmpty = require('lodash/isEmpty.js');
 const dynamo = require('../modules/aws.js').DynamoDB;
 const utils = require('../modules/utils.js');
 
-exports = module.exports = (config) => (event, context, callback) => {
-  const key = utils.btoj(event.pathParameters.key);
+exports = module.exports = (config) => (req, res) => {
+  const key = utils.btoj(req.params.key);
 
-  if (utils.isValid(config.key, key, callback) === false) return;
+  if (utils.isValid(config.key, key, res) === false) return;
 
-  dynamo.get({
-    TableName: process.env.TABLE_NAME,
+  const params = {
+    TableName: config.tableName,
     Key: key
-  }).promise()
+  };
+
+  if (config.attributesToGet)
+    params.AttributesToGet = config.attributesToGet;
+
+  dynamo.get(params).promise()
   .then(data => {
     if (isEmpty(data.Item)) {
       console.log(`${config.type} with the following key does not exists.`)
@@ -20,10 +25,13 @@ exports = module.exports = (config) => (event, context, callback) => {
       throw new utils.ElementDoesNotExistsError(config.type, key);      
     }
     console.log(`${config.type} found.`);
-    callback(null, utils.createResponse(200, data.Item));
+    res.status(200).json(data.Item);
   })
-	.catch(err => {
-		console.log(err.message);
-		callback(null, utils.createResponse(400, err));
+	.catch(error => {
+		console.log(error.message);
+		res.status(400).json({
+      name: error.name,
+      message: error.message,
+    });
 	});
 };

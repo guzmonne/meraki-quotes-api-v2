@@ -3,11 +3,10 @@
 const Joi = require('joi');
 const crypto = require('crypto');
 const uuid = require('uuid');
-const withAuth = require('../middlewares/withAuth.js');
 const dynamo = require('../modules/aws.js').DynamoDB;
 const utils = require('../modules/utils.js');
 
-const TABLE_NAME = process.env.TABLE_NAME;
+const TABLE_NAME = process.env.USERS_TABLE_NAME;
 const schema = Joi.object().keys({
 	email: Joi.string().email().required(),
 	password: Joi.string().min(8).required(),
@@ -15,14 +14,10 @@ const schema = Joi.object().keys({
 });
 
 
-exports.handler = withAuth(function(event, context, callback) {
-	const body = JSON.parse(event.body || '{}');
-	const isValid = utils.isValid(schema, body);
+exports = module.exports = (req, res) => {
+	const body = req.body;
 
-	if (isValid !== true) {
-		callback(null, utils.createResponse(400, isValid));
-		return;
-	};
+  if (utils.isValid(schema, body, res) === false) return;
 
 	const email = body.email;
 	const clearPassword = body.password;
@@ -37,17 +32,20 @@ exports.handler = withAuth(function(event, context, callback) {
 	})
 	.then(token => {
 		console.log('Created user.');
-		return sendVerificationEmail(email, clearPassword, token, context);
+		return sendVerificationEmail(email, clearPassword, token);
 	})
 	.then(() => {
 		console.log('Verification email sent.');
-		context.succeed(utils.createResponse(201));
+		res.status(201).send();
 	})
-	.catch(err => {
-		console.log(err.message);
-		callback(null, utils.createResponse(400, err));
+	.catch(error => {
+    console.log(error.message);
+    res.status(400).json({
+      name: error.name,
+      messag: error.message,
+    });
 	});
-});
+};
 
 function emailTemplate(data) {
 	return `

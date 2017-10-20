@@ -9,45 +9,45 @@ const utils = require('../modules/utils.js');
 
 const SESSIONS_TABLE_NAME = process.env.SESSIONS_TABLE_NAME;
 
-exports = module.exports = (permission, next) => (event, context, callback) => {
-  if (isFunction(next) === false)
-    next = permission;
-  
-  const unauthorized = unauthorizedResponse(callback);
+exports = module.exports = (req, res, next) => {
+  const unauthorized = unauthorizedResponse(res);
   
   let token, tokenArray;
   
   try {
-    token = event.headers.Authorization.split(' ');
+    token = req.headers.authorization.split(' ');
   } catch(err) {
     console.log(err.message);
-    return unauthorized();
+    return unauthorized(err);
   }
   
   if (token[0] !== 'Bearer') {
-    console.log(token[0]);
-    console.log('Invalid token. No "Bearer".');
-    return unauthorized();
+    return unauthorized({
+      name: 'InvalidTokenError',
+      message: 'Invalid token. No "Bearer".',
+    });
   }
 
   try {
     tokenArray = token[1].split('.');
   } catch(err) {
-    console.log(err.message);
-    return unauthorized();
+    return unauthorized(err);
   }
 
   if (tokenArray.length !== 3) {
-    console.log('Wrong split length');
-    console.log(token);
-    return unauthorized();
+    return unauthorized({
+      name: 'InvalidTokenError',
+      message: 'Wrong split length',
+    });
   }
 
   const body = utils.btoj(tokenArray[1]);
 
   if (!body || !body.jti) {
-    console.log('No jti value found');
-    return unauthorized();
+    return unauthorized({
+      name: 'InvalidTokenError',
+      message: 'No jti value found',
+    });
   }
 
   dynamo.get({
@@ -64,29 +64,23 @@ exports = module.exports = (permission, next) => (event, context, callback) => {
     console.log('Session found.');
     return new Promise((resolve, reject) => {
       nJwt.verify(token[1], data.Item.key, (err, verifiedJwt) => {
-        if (err) 
+        if (err) {
           reject(err);
+          return;
+        }
         resolve(verifiedJwt);
       });
     });
   })
   .then((verifiedJwt) => {
     console.log('Token verified');
-    const permissions = get(verifiedJwt, 'body.permissions', []);
-
-    if (isString(permission) && permissions.indexOf(permission) === -1) {
-      console.log(permissions);
-      unauthorized(`User does not have the ${permission} permission.`);
-      return;  
-    }
-
-    event.user = {
+    req.user = {
       ID: get(verifiedJwt, 'body.jti'),
       username: get(verifiedJwt, 'body.username'),
       email: get(verifiedJwt, 'body.email'),
-      permissions,
+      permissions: get(verifiedJwt, 'body.permissions'),
     };
-    next(event, context, callback);
+    next();
   })
 	.catch(err => {
     console.log(err.message);
@@ -94,11 +88,22 @@ exports = module.exports = (permission, next) => (event, context, callback) => {
 	});
 };
 
-function unauthorizedResponse(callback) {
-  return function(message) {
-    callback(null, utils.createResponse(
-      401,
-      new utils.UnauthorizedError(message)
-    ));
+function unauthorizedResponse(res) {
+  return function(error) {
+    console.log(error);
+    res.status(401).json({
+      name: error.name,
+      message: error.message
+    });
   }
 }
+
+/*
+const permissions = get(verifiedJwt, 'body.permissions', []);
+if (isString(permission) && permissions.indexOf(permission) === -1) {
+  console.log(permissions);
+  throw new utils.UnauthorizedError(
+    `User does not have the ${permission} permission.`
+  ); 
+}
+*/

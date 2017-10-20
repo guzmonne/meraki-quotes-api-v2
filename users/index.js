@@ -2,19 +2,15 @@
 
 const Joi = require('joi');
 const compose = require('../middlewares/helpers.js').compose;
-const withAuth = require('../middlewares/withAuth.js');
-const indexOptions = require('../middlewares/indexOptions.js');
 const index = require('../controller/index.js');
 
 const keySchema = Joi.object().keys({
   email: Joi.string().email().required(),
 });
 
-exports.handler = compose(
-  withAuth,
-  indexOptions(keySchema)
-)(index({
+exports = module.exports = index({
   type: 'Users', 
+  tableName: process.env.USERS_TABLE_NAME,
   attributesToGet: [
     'ID',
     'email',
@@ -23,4 +19,4 @@ exports.handler = compose(
     'updatedAt',
     'verified',
   ]
-}));
+});

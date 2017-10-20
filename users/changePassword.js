@@ -5,21 +5,21 @@ const crypto = require('crypto');
 const get = require('lodash/get');
 const dynamo = require('../modules/aws.js').DynamoDB;
 const utils = require('../modules/utils.js');
-const withAuth = require('../middlewares/withAuth.js');
 
-const TABLE_NAME = process.env.TABLE_NAME;
+const TABLE_NAME = process.env.USERS_TABLE_NAME;
+
 const schema = Joi.object().keys({
 	email: Joi.string().email().required(),
 	password: Joi.string().min(8).required(),
 	newPassword: Joi.string().min(8).required(),
 });
 
-exports.handler = withAuth(function(event, context, callback) {
-	const body = JSON.parse(event.body || '{}');
+exports = module.exports = (req, res) =>  {
+	const body = req.body;
   
-  body.email = event.user.email;
+  body.email = req.user.email;
 
-  if (utils.isValid(schema, body, callback) === false) return;
+  if (utils.isValid(schema, body, res) === false) return;
 
 	const email = body.email;
 	const password = body.password;
@@ -35,10 +35,10 @@ exports.handler = withAuth(function(event, context, callback) {
 	.then((data) => {
 		user = get(data, 'Item');
 		if (user === undefined || user.email === undefined) {
-			callback(null, utils.createResponse(400, {
-				name: 'UserDoesNotExists',
-				message: 'The specified user does not exists.',
-			}));
+      res.status(400).json({
+        name: 'UserDoesNotExists',
+        message: 'The specified user does not exists.',
+      })
 			return;
 		}
 		console.log('User found.');
@@ -74,14 +74,17 @@ exports.handler = withAuth(function(event, context, callback) {
 		return utils.sendEmail(email, subject, emailTemplate(subject));
 	})
 	.then(() => {
-		console.log('Email sent successfully to', email);
-		callback(null, utils.createResponse(202));
+    console.log('Email sent successfully to', email);
+    res.status(202).send();
 	})
-	.catch(err => {
-		console.log(err.message);
-		callback(null, utils.createResponse(400, err));
+	.catch(error => {
+    console.log(error);
+    res.status(400).json({
+      name: error.name,
+      message: error.message,
+    })
 	});
-});
+};
 
 function emailTemplate(subject) {
 	return `

@@ -17,6 +17,7 @@ Resources:
       Runtime: nodejs6.10
       Environment:
         Variables:
+          AWS_REGION: us-east-1
           SESSIONS_TABLE_NAME: ConappsSessions
           USERS_TABLE_NAME: ConappsUsers
           HELPERS_TABLE_NAME: ConappsHelpers

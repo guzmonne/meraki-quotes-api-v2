@@ -3,16 +3,12 @@
 const Joi = require('joi');
 const utils = require('../modules/utils.js');
 
-const defaultOptions = {
+const defaultQuery = {
   limit: 10,
 };
 
-exports = module.exports = (keySchema) => (next) => (
-  event,
-  context,
-  callback
-) => {
-  const query = event.queryStringParameters || {};
+exports = module.exports = (keySchema) => (req, res, next) => {
+  let query = req.query || {};
   
   const schema = Joi.object().keys({
     limit: Joi.number().max(100),
@@ -26,14 +22,17 @@ exports = module.exports = (keySchema) => (next) => (
       query.offset = utils.btoj(query.offset);
   } catch (err) {
     console.log(err.message);
-    callback(null, utils.createResponse(400, err));
+    res.status(400).json({
+      name: error.name,
+      message: error.message,
+    });
   }
 
-  const options = Object.assign({}, defaultOptions, query);
-  
-  event.options = options;
+  query = Object.assign({}, defaultQuery, query);
 
-  if (utils.isValid(schema, options, callback) === false) return;
+  if (utils.isValid(schema, query, res) === false) return;
 
-  next(event, context, callback);
+  req.query = query;
+
+  next();
 };
