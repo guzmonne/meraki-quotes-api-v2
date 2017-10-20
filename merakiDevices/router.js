@@ -2,6 +2,8 @@
 
 const Joi = require('joi');
 
+let router = require('express').Router();
+
 const categories = ['Switches', 'Wireless', 'SME', 'UTM', 'Video'];
 
 const key = {
@@ -18,20 +20,21 @@ const body = {
   updatedAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
 }
 
-exports = module.exports = {
+router.use(require('../controller/createController.js')({
   type: 'Meraki Device',
+  key: Joi.object().keys(key),
+  tableName: process.env.MERAKI_DEVICES_TABLE_NAME,
   hash: 'Category',
   range: 'PartNumber',
-  key: Joi.object().keys(key),
-  body: (
-    Joi.object().keys(body).when('ID', {
-      is: Joi.empty(),
-      then: Joi.object().keys({
-        Description: Joi.string().optional(),
-        Price: Joi.number().optional(),
-      })
+  body: Joi.object().keys(body).when('ID', {
+    is: Joi.empty(),
+    then: Joi.object().keys({
+      Description: Joi.string().optional(),
+      Price: Joi.number().optional(),
     })
-  ),
+  }),
   item: Object.assign({}, key, body),
   schema: Joi.object().keys(this.item),
-}
+}));
+
+exports = module.exports = router;

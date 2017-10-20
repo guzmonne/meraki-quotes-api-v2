@@ -10,11 +10,11 @@ const defaultConfig = {
   createUUID: true,
 };
 
-exports = module.exports = (config) => (event, context, callback) => {
+exports = module.exports = (config) => (req, res) => {
   config = Object.assign({}, defaultConfig, config);
-  const body = JSON.parse(event.body || '{}');
+  const body = req.body
 
-  if (utils.isValid(config.schema, body, callback) === false) return;
+  if (utils.isValid(config.schema, body, res) === false) return;
   
   const now = Date.now();
 
@@ -33,7 +33,7 @@ exports = module.exports = (config) => (event, context, callback) => {
     key[config.range] = body[config.range],
 
   dynamo.get({
-    TableName: process.env.TABLE_NAME,
+    TableName: config.tableName,
     Key: key,
   })
   .promise()
@@ -45,17 +45,20 @@ exports = module.exports = (config) => (event, context, callback) => {
     }
     console.log(`Trying to create a new ${config.type}`);
     return dynamo.put({
-      TableName: process.env.TABLE_NAME,
+      TableName: config.tableName,
       Item: body,
     })
     .promise();
   })
 	.then(() => {
 		console.log(`${config.type} created.`);
-		callback(null, utils.createResponse(200, {ID: body.ID}));
+		res.status(200).json({ID: body.ID});
 	})
-	.catch(err => {
-		console.log(err.message);
-		callback(null, utils.createResponse(400, err));
+	.catch(error => {
+		console.log(error.message);
+		res.status(400).json({
+      name: error.name,
+      message: error.message,
+    });
 	});
 }
