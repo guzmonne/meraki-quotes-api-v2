@@ -112,11 +112,7 @@ Parameters:
           MERAKI_DEVICES_TABLE_NAME: !Ref ConappsMerakiDevices
       Role:
         Fn::ImportValue:
-          Fn::Join:
-          - '-'
-          - - Ref: ProjectId
-            - Ref: AWS::Region
-            - LambdaTrustRole
+          !Join ['-', [!Ref 'ProjectId', !Ref 'AWS::Region', 'LambdaTrustRole']]
       Events:
         ProxyApiRoot:
           Type: Api
