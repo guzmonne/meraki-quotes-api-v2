@@ -36,60 +36,7 @@ Resources:
           HELPERS_TABLE_NAME: ConappsHelpers
           MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotes
           MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevices
-      Policies:
-        -
-          Version: '2012-10-17'
-          Statement:
-          - Effect: Allow
-            Action:
-            - logs:CreateLogGroup
-            - logs:CreateLogStream
-            - logs:PutLogEvents
-            Resource: "*"
-        -
-          Version: '2012-10-17'
-          Statement:
-          - Sid: '1'
-            Effect: Allow
-            Action:
-            - apigateway:HEAD
-            - apigateway:OPTIONS
-            - apigateway:PATCH
-            - apigateway:POST
-            - apigateway:PUT
-            - execute-api:*
-            - logs:DescribeLogStreams
-            - logs:GetLogEvents
-            Resource:
-            - arn:aws:apigateway:us-east-1::/restapis/n8cmrd4qu9/*
-            - arn:aws:execute-api:us-east-1:925638840915:n8cmrd4qu9
-            - arn:aws:execute-api:us-east-1:925638840915:n8cmrd4qu9/*
-            - arn:aws:iam::925638840915:policy/CodeStar_meraki-quotes-a_Contributor
-            - arn:aws:logs:us-east-1:925638840915:log-group:API-Gateway-Execution-Logs_n8cmrd4qu9/*
-          - Sid: '2'
-            Effect: Allow
-            Action:
-            - apigateway:GET
-            - logs:DescribeLogGroups
-            Resource:
-            - "*"
-        -
-          Version: '2012-10-17'
-          Statement:
-          - Sid: ConappsDynamoDBReadWrite
-            Effect: Allow
-            Action:
-            - dynamodb:DeleteItem
-            - dynamodb:GetItem
-            - dynamodb:PutItem
-            - dynamodb:Query
-            - dynamodb:Scan
-            - dynamodb:UpdateItem
-            Resource:
-            - arn:aws:dynamodb:us-east-1:925638840915:table/ConappsMerakiDevices
-            - arn:aws:dynamodb:us-east-1:925638840915:table/ConappsHelpers
-            - arn:aws:dynamodb:us-east-1:925638840915:table/ConappsCounts
-            - arn:aws:dynamodb:us-east-1:925638840915:table/ConappsUsers
+      Policies: APIGatewayLambdaExecRole
       Events:
         ProxyApiRoot:
           Type: Api
