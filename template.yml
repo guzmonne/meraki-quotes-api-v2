@@ -22,8 +22,18 @@ Resources:
           HELPERS_TABLE_NAME: ConappsHelpers
           MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotes
           MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevices
-      # Custom policies
-      Policies: AWSLambdaExecutionPolicies
+      Policies: 
+        - AmazonDynamoDBFullAccess
+        - 
+          Version: "2012-10-17"
+          Statement: 
+            -
+            Sid: "Stmt1508532254000"
+            Effect: "Allow"
+            Action:
+              - "ses:SendEmail"
+            Resource:
+              - "*"
       Events:
         ProxyApiRoot:
           Type: Api
