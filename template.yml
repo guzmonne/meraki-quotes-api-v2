@@ -28,12 +28,12 @@ Resources:
           Version: "2012-10-17"
           Statement: 
             -
-            Sid: "Stmt1508532254000"
-            Effect: "Allow"
-            Action:
-              - "ses:SendEmail"
-            Resource:
-              - "*"
+              Sid: "Stmt1508532254000"
+              Effect: "Allow"
+              Action:
+                - "ses:SendEmail"
+              Resource:
+                - "*"
       Events:
         ProxyApiRoot:
           Type: Api
