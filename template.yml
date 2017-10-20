@@ -8,22 +8,6 @@ Parameters:
     Type: String
     Description: Meraki Quotes API v2
 
-Resources:
-  AWSLambdaExecutionRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          - 
-            Effect: "Allow"
-            Principal: 
-              Service: 
-                - "ec2.amazonaws.com"
-            Action: 
-              - "sts:AssumeRole"
-      RoleName: AWSLambdaExecutionRole
-
   ExpressApp:
     Type: AWS::Serverless::Function
     Properties:
