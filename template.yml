@@ -20,6 +20,14 @@ Parameters:
           HELPERS_TABLE_NAME: ConappsHelpers
           MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotes
           MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevices
+      Policies: APIGatewayLambdaExecRole
+      Role:
+        Fn::ImportValue:
+          Fn::Join:
+          - '-'
+          - - Ref: ProjectId
+            - Ref: AWS::Region
+            - LambdaTrustRole
       Events:
         ProxyApiRoot:
           Type: Api
