@@ -1,7 +1,6 @@
 'use strict';
 
 const Joi = require('joi');
-const withAuth = require('../../middlewares/withAuth.js');
 const dynamo = require('../../modules/aws.js').DynamoDB;
 const utils = require('../../modules/utils.js');
 
@@ -15,15 +14,10 @@ const schema = Joi.object().keys({
 	url: Joi.string().uri({relativeOnly: true}).required(),
 });
 
-exports.handler = withAuth(function(event, context, callback) {
-  const body = JSON.parse(event.body || '{}');
+exports = module.exports = (req, res) => {
+  const body = req.body;
 
-	const isValid = utils.isValid(schema, body);
-
-	if (isValid !== true) {
-		callback(null, utils.createResponse(400, isValid));
-		return;
-	};
+	if (utils.isValid(schema, body, res) === false) return;
 
 	dynamo.get({
 		TableName: TABLE_NAME,
@@ -42,11 +36,14 @@ exports.handler = withAuth(function(event, context, callback) {
 		}).promise()
 	})
 	.then(data => {
-		console.log('Permission saved');
-		callback(null, utils.createResponse(201));
+    console.log('Permission saved');
+    res.status(201).send();
 	})
 	.catch(error => {
-		console.log(JSON.stringify(error, null, 2));
-		callback(null, utils.createResponse(400, error));
+    console.log(error.message);
+    res.status(400).json({
+      name: error.name,
+      messag: error.message,
+    });
 	});
-});
+}

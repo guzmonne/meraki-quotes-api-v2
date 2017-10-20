@@ -30,30 +30,15 @@ exports = module.exports = (req, res) => {
 		const verifyToken = get(data, 'Item.verifyToken');
 
 		if (verified === true) {
-      const message = `User ${email} has already been verified.`
-      console.log(message);
-      res.status(400).json({
-				name: 'UserIsAlreadyVerified',
-				message,
-			})
+      throw new UserHasAlreadyBeenVerifiedError(email);
 		}
 
 		if (verifyToken === undefined) {
-      const message = 'The stored verifyToken value is undefined.'
-			console.log(message);
-			res.status(400).json({
-				name: 'VerifyTokenIsUndefined',
-				message,
-			});
+      throw new VerifyTokenIsUndefinedError();
 		}
 
 		if (verifyToken !== query.verifyToken) {
-      const messsage = 'Verification token doesn\'t match.';
-      console.log(message);
-			res.status(400).json({
-				name: 'VerificationTokenMismatch',
-				message,
-			});
+      throw new VerifyTokenIsInvalidError();
 		}
 
 		console.log('Verification token match.');
@@ -83,4 +68,19 @@ exports = module.exports = (req, res) => {
       message: error.message,
     })
 	})
+}
+
+function UserHasAlreadyBeenVerifiedError(email) {
+  this.name = 'UserHasAlreadyBeenVerified';
+  this.message = `User ${email} has already been verified.`
+}
+
+function VerifyTokenIsUndefinedError() {
+  this.name = 'VerifyTokenIsUndefinedError';
+  this.message = 'The stored verifyToken value is undefined.';
+}
+
+function VerifyTokenIsInvalidError() {
+  this.name = 'VerifyTokenIsInvalid';
+  this.message = 'Verification token doesn\'t match.';
 }

@@ -9,10 +9,20 @@ const defaultConfig = {
 
 exports = module.exports = (config) => (req, res) => {
   config = Object.assign({}, defaultConfig, config);
-  const key = utils.btoj(req.params.key);
   const body = req.body
 
   if (utils.isValid(config.body, body, res) === false) return;
+
+  let key
+  try {
+    key = utils.btoj(req.params.key);    
+  } catch (error) {
+    res.status(400).json({
+      name: error.name,
+      message: error.message,
+    });
+    return;
+  }
   
   if (config.updateUpdatedAt)
     body.updatedAt = Date.now();

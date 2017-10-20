@@ -20,7 +20,7 @@ exports = module.exports = (config) => (req, res) => {
   dynamo.scan(params)
   .promise()
   .then((data) => {
-    console.log(`Got ${config.type} list.`);
+    console.log(`Got ${config.plural || config.type + 's'} list.`);
     res.status(200).json(data.Items)
   })
   .catch(error => {

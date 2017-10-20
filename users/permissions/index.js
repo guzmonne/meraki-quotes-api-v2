@@ -1,13 +1,12 @@
 'use strict';
 
-const withAuth = require('../../middlewares/withAuth.js');
 const dynamo = require('../../modules/aws.js').DynamoDB;
 const createResponse = require('../../modules/utils.js').createResponse;
 
 const TABLE_NAME = process.env.HELPERS_TABLE_NAME;
 
-exports.handler = withAuth(function(event, context, callback) {
-	dynamo.get({
+exports = module.exports = function(req, res) {
+  dynamo.get({
 		TableName: TABLE_NAME,
 		Key: {
 			helperName: 'UserPermissions',
@@ -20,10 +19,13 @@ exports.handler = withAuth(function(event, context, callback) {
 			return;
 		}
 		console.log('Found users permissons.');
-		callback(null, createResponse(200, data.Item.values));
+		res.status(200).json(data.Item.values);
 	})
-	.catch(error => {
+  .catch(error => {
     console.log(error.message);
-		callback(null, createResponse(400, error.message));
+    res.status(400).json({
+      name: error.name,
+      messag: error.message,
+    });
 	});
-});
+}

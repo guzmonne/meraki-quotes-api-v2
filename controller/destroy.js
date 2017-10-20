@@ -4,7 +4,16 @@ const dynamo = require('../modules/aws.js').DynamoDB;
 const utils = require('../modules/utils.js');
 
 exports = module.exports = (config) => (req, res) => {
-  const key = utils.btoj(req.params.key);
+  let key
+  try {
+    key = utils.btoj(req.params.key);    
+  } catch (error) {
+    res.status(400).json({
+      name: error.name,
+      message: error.message,
+    });
+    return;
+  }
 
   if (utils.isValid(config.key, key, res) === false) return;
 
