@@ -18,7 +18,10 @@ exports = module.exports = (req, res, next) => {
     token = req.headers.authorization.split(' ');
   } catch(err) {
     console.log(err.message);
-    return unauthorized(err);
+    return unauthorized({
+      name: 'InvalidTokenError',
+      message: 'Invalid token.',
+    });
   }
   
   if (token[0] !== 'Bearer') {

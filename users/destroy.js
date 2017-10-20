@@ -1,12 +1,12 @@
 'use strict';
 
 const Joi = require('joi');
-const withAuth = require('../middlewares/withAuth.js');
 const destroy = require('../controller/destroy.js');
 
-exports.handler = withAuth('users-destroy', destroy({
+exports = module.exports = destroy({
   type: 'User',
   key: {
     email: Joi.string().email().required(),
-  }
-}));
+  },
+  tableName: process.env.USERS_TABLE_NAME,
+})

@@ -3,21 +3,24 @@
 const dynamo = require('../modules/aws.js').DynamoDB;
 const utils = require('../modules/utils.js');
 
-exports = module.exports = (config) => (event, context, callback) => {
-  const key = utils.btoj(event.pathParameters.key);
+exports = module.exports = (config) => (req, res) => {
+  const key = utils.btoj(req.params.key);
 
-  if (utils.isValid(config.key, key, callback) === false) return;
+  if (utils.isValid(config.key, key, res) === false) return;
 
   dynamo.delete({
-    TableName: process.env.TABLE_NAME,
-    Key: key
+    TableName: config.tableName,
+    Key: key,
   }).promise()
   .then(data => {
     console.log(`${config.type} deleted.`);
-    callback(null, utils.createResponse(200));
+    res.status(202).send();
   })
-	.catch(err => {
-		console.log(err.message);
-		callback(null, utils.createResponse(400, err));
+	.catch(error => {
+		console.log(error.message);
+		res.status(400).json({
+      name: error.name,
+      message: error.message,
+    });
 	});
 };

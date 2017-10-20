@@ -7,33 +7,36 @@ const defaultConfig = {
   updateUpdatedAt: true,
 };
 
-exports = module.exports = (config) => (event, context, callback) => {
+exports = module.exports = (config) => (req, res) => {
   config = Object.assign({}, defaultConfig, config);
-  const key = utils.btoj(event.pathParameters.key);
-  const body = JSON.parse(event.body || '{}');
+  const key = utils.btoj(req.params.key);
+  const body = req.body
 
-  if (utils.isValid(config.body, body, callback) === false) return;
+  if (utils.isValid(config.body, body, res) === false) return;
   
   if (config.updateUpdatedAt)
     body.updatedAt = Date.now();
 
-  delete body[config.hash];    
+  delete body[config.hash];
   delete body[config.range];
 
   const params = Object.assign({
-    TableName: process.env.TABLE_NAME,
+    TableName: config.tableName,
     Key: key,
   }, buildUpdateExpressionObject(body));
 
   dynamo.update(params)
   .promise()
 	.then(() => {
-		console.log(`${config.type} updated.`);
-		callback(null, utils.createResponse(200));
+    console.log(`${config.type} updated.`);
+    res.status(202).send();
 	})
-	.catch(err => {
-		console.log(err.message);
-		callback(null, utils.createResponse(400, err));
+	.catch(error => {
+		console.log(error.message);
+		res.status(400).json({
+      name: error.name,
+      message: error.message,
+    });
 	});
 };
 

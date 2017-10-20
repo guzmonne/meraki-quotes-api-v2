@@ -14,12 +14,8 @@ router.post('/', require('./create.js'));
 
 router.get('/:key', require('./show.js'));
 
-/*
-
 router.put('/:key', require('./update.js'));
 
 router.delete('/:key', require('./destroy.js'));
-
-*/
 
 exports = module.exports = router;
