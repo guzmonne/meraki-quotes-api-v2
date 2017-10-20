@@ -11,7 +11,8 @@ Parameters:
 Resources:
   ConappsUsers:
     Type: "AWS::DynamoDB::Table"
-    Properties: 
+    Properties:
+      TableName: ConappsUsersV2
       AttributeDefinitions: 
         - 
           AttributeName: "email"
@@ -24,9 +25,10 @@ Resources:
         ReadCapacityUnits: "1"
         WriteCapacityUnits: "1"
 
-  ConappsMerakiQuotes:
+  ConappsMerakiDevices:
     Type: "AWS::DynamoDB::Table"
-    Properties: 
+    Properties:
+      TableName: ConappsMerakiDevicesV2
       AttributeDefinitions: 
         - 
           AttributeName: "UserID"
@@ -44,7 +46,8 @@ Resources:
 
   ConappsMerakiQuotes:
     Type: "AWS::DynamoDB::Table"
-    Properties: 
+    Properties:
+      TableName: ConappsMerakiQuotesV2
       AttributeDefinitions: 
         - 
           AttributeName: "Category"
@@ -65,7 +68,8 @@ Resources:
   
   ConappsHelpers:
     Type: "AWS::DynamoDB::Table"
-    Properties: 
+    Properties:
+      TableName: ConappsHelpersV2
       AttributeDefinitions: 
         - 
           AttributeName: "helperName"
@@ -80,7 +84,8 @@ Resources:
 
   ConappsSessions:
     Type: "AWS::DynamoDB::Table"
-    Properties: 
+    Properties:
+      TableName: ConappsSessionsV2
       AttributeDefinitions: 
         - 
           AttributeName: "jti"
@@ -100,11 +105,11 @@ Resources:
       Runtime: nodejs6.10
       Environment:
         Variables:
-          SESSIONS_TABLE_NAME: !Ref ConappsSessions
-          USERS_TABLE_NAME: !Ref ConappsUsers
-          HELPERS_TABLE_NAME: !Ref ConappsHelpers
-          MERAKI_QUOTES_TABLE_NAME: !Ref ConappsMerakiQuotes
-          MERAKI_DEVICES_TABLE_NAME: !Ref ConappsMerakiDevices
+          SESSIONS_TABLE_NAME: ConappsSessionsV2
+          USERS_TABLE_NAME: ConappsUsersV2
+          HELPERS_TABLE_NAME: ConappsHelpersV2
+          MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotesV2
+          MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevicesV2
       Role:
         Fn::ImportValue:
           Fn::Join:
