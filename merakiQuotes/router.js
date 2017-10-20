@@ -1,7 +1,11 @@
 'use strict';
 
 const Joi = require('joi');
-const merakiDevicesItem = require('../merakiDevices/config.js').item;
+const controllerCreate = require('../controller/create.js');
+
+let router = require('express').Router();
+
+const merakiDevicesItem = require('../merakiDevices/router.js').item;
 
 const key = {
   UserID: Joi.string().required(),
@@ -35,22 +39,34 @@ const body = {
   updatedAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
 };
 
-exports = module.exports = {
+const config = {
   type: 'Meraki Quote',
   hash: 'UserID',
   range: 'createdAt',
   key: Joi.object().keys(key),
-  body: (
-    Joi.object().keys(body).when('ID', {
-      is: Joi.exist(),
-      then: Object.keys(body)
-      .filter(key => (key !== 'ID' || key !== 'Devices'))
-      .reduce((acc, key) => Object.assign({}, acc, {
-        [key]: body[key].required(),
-      }), {})
-    })
-  ),
+  tableName: process.env.MERAKI_QUOTES_TABLE_NAME,
+  body: Joi.object().keys(body).when('ID', {
+    is: Joi.exist(),
+    then: Object.keys(body)
+    .filter(key => (key !== 'ID' || key !== 'Devices'))
+    .reduce((acc, key) => Object.assign({}, acc, {
+      [key]: body[key].required(),
+    }), {})
+  }),
   item: Object.assign({}, key, body),
   schema: Joi.object().keys(this.item),
-  updateCreatedAt: false,
+  updateCreatedAt: false
 };
+
+const create = (req, res) => {
+  req.body.UserID = req.user.ID,
+  req.body.UserName = req.user.username,
+  req.body.createdAt = (new Date()).toISOString();
+  controllerCreate(config)(req, res);
+}
+
+config.handlers = {create};
+
+router.use(require('../controller/createController.js')(config));
+
+exports = module.exports = router;

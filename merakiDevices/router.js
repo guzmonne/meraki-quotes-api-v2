@@ -20,6 +20,8 @@ const body = {
   updatedAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
 }
 
+router.item = Object.assign({}, key, body);
+
 router.use(require('../controller/createController.js')({
   type: 'Meraki Device',
   key: Joi.object().keys(key),
@@ -33,7 +35,7 @@ router.use(require('../controller/createController.js')({
       Price: Joi.number().optional(),
     })
   }),
-  item: Object.assign({}, key, body),
+  item: router.item,
   schema: Joi.object().keys(this.item),
 }));
 

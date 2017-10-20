@@ -10,6 +10,8 @@ app.use(require('./middlewares/auth.js'));
 
 app.use('/merakiDevices', require('./merakiDevices/router.js'));
 
+app.use('/merakiQuotes', require('./merakiQuotes/router.js'));
+
 app.use((req, res) => {
   res.status(404).json({
     name: 'NotFound',
