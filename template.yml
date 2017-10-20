@@ -22,7 +22,8 @@ Resources:
           HELPERS_TABLE_NAME: ConappsHelpers
           MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotes
           MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevices
-      Policies: AmazonDynamoDBFullAccess
+      # Custom policies
+      Policies: AWSLambdaExecutionPolicies
       Events:
         ProxyApiRoot:
           Type: Api
