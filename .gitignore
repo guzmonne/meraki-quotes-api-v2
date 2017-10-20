@@ -89,3 +89,5 @@ typings/
 packaged-template.yaml
 
 api
+
+scripts/Conapps*

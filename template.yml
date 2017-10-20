@@ -8,18 +8,108 @@ Parameters:
     Type: String
     Description: Meraki Quotes API v2
 
+  ConappsUsers:
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "email"
+          AttributeType: "S"
+      KeySchema: 
+        - 
+          AttributeName: "email"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+
+  ConappsMerakiQuotes:
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "UserID"
+          AttributeType: "S"
+        - 
+          AttributeName: "createdAt"
+          AttributeType: "S"
+      KeySchema: 
+        - 
+          AttributeName: "jti"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+
+  ConappsMerakiQuotes:
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "Category"
+          AttributeType: "S"
+        - 
+          AttributeName: "PartNumber"
+          AttributeType: "S"
+      KeySchema: 
+        - 
+          AttributeName: "Category"
+          KeyType: "HASH"
+        - 
+          AttributeName: "PartNumber"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+  
+  ConappsHelpers:
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "helperName"
+          AttributeType: "S"
+      KeySchema: 
+        - 
+          AttributeName: "helperName"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+
+  ConappsSessions:
+    Type: "AWS::DynamoDB::Table"
+    Properties: 
+      AttributeDefinitions: 
+        - 
+          AttributeName: "jti"
+          AttributeType: "S"
+      KeySchema: 
+        - 
+          AttributeName: "jti"
+          KeyType: "HASH"
+      ProvisionedThroughput: 
+        ReadCapacityUnits: "1"
+        WriteCapacityUnits: "1"
+
   ExpressApp:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
       Runtime: nodejs6.10
+      DependsOn:
+        - ConappsSession
+        - ConappsUsers
+        - ConappsHelpers
+        - ConappsMerakiQuotes
+        - ConappsMerakiDevices
       Environment:
         Variables:
-          SESSIONS_TABLE_NAME: ConappsSessions
-          USERS_TABLE_NAME: ConappsUsers
-          HELPERS_TABLE_NAME: ConappsHelpers
-          MERAKI_QUOTES_TABLE_NAME: ConappsMerakiQuotes
-          MERAKI_DEVICES_TABLE_NAME: ConappsMerakiDevices
+          SESSIONS_TABLE_NAME: !Ref ConappsSessions
+          USERS_TABLE_NAME: !Ref ConappsUsers
+          HELPERS_TABLE_NAME: !Ref ConappsHelpers
+          MERAKI_QUOTES_TABLE_NAME: !Ref ConappsMerakiQuotes
+          MERAKI_DEVICES_TABLE_NAME: !Ref ConappsMerakiDevices
       Policies: APIGatewayLambdaExecRole
       Role:
         Fn::ImportValue:
