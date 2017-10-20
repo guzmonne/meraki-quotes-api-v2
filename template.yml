@@ -38,8 +38,11 @@ Resources:
           AttributeType: "S"
       KeySchema: 
         - 
-          AttributeName: "jti"
+          AttributeName: "UserID"
           KeyType: "HASH"
+        - 
+          AttributeName: "createdAt"
+          KeyType: "RANGE"
       ProvisionedThroughput: 
         ReadCapacityUnits: "1"
         WriteCapacityUnits: "1"
