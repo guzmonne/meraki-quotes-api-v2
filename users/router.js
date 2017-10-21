@@ -15,9 +15,13 @@ router.get('/verify', require('./verify.js'));
 
 router.use(require('../middlewares/auth.js'));
 
+router.use('/active', require('./active.js'));
+
 router.post('/changePassword', require('./changePassword.js'));
 
 router.get('/me', require('./me.js'));
+
+router.get('/logout', require('./logout.js'));
 
 router.get('/permissions', require('./permissions/index.js'));
 
