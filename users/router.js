@@ -43,6 +43,7 @@ router.use(require('../controller/createController.js')({
     'createdAt',
     'updatedAt',
     'verified',
+    'permissions',
   ],
   hash: 'email',
   body: Joi.object().keys({
