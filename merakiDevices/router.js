@@ -20,8 +20,8 @@ const key = {
 
 const body = {
   ID: Joi.string(),
-  Description: Joi.string().required(),
-  Price: Joi.number().required(),
+  Description: Joi.string(),
+  Price: Joi.number(),
   ImageUrl: Joi.string().uri(),
   createdAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
   updatedAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
@@ -35,15 +35,9 @@ router.use(require('../controller/createController.js')({
   tableName: process.env.MERAKI_DEVICES_TABLE_NAME,
   hash: 'Category',
   range: 'PartNumber',
-  body: Joi.object().keys(body).when('ID', {
-    is: Joi.empty(),
-    then: Joi.object().keys({
-      Description: Joi.string().optional(),
-      Price: Joi.number().optional(),
-    })
-  }),
+  body: Joi.object().keys(body),
   item: router.item,
-  schema: Joi.object().keys(this.item),
+  schema: Joi.object().keys(router.item),
 }));
 
 exports = module.exports = router;
