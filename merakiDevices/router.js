@@ -4,7 +4,14 @@ const Joi = require('joi');
 
 let router = require('express').Router();
 
-const categories = ['Switches', 'Wireless', 'SME', 'UTM', 'Video'];
+const categories = [
+  'Switches',
+  'Wireless',
+  'SME',
+  'UTM',
+  'Video',
+  'Accesories'
+];
 
 const key = {
   Category: Joi.string().valid(categories).required(),
