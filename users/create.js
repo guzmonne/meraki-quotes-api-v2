@@ -82,7 +82,7 @@ function emailTemplate(data) {
 
 function sendVerificationEmail(email, password, token) {
 	const subject = 'Bienvenido a Conapps.';
-	const url = 'http://www.conapps.click';
+	const url = process.env.ROOT_URL;
 	const endpoint = 'verify';
 	const encodedEmail = encodeURIComponent(email);
 	const verificationLink = (

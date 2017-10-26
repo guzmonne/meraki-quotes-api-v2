@@ -17,6 +17,7 @@ Resources:
       Runtime: nodejs6.10
       Environment:
         Variables:
+          ROOT_URL: https://www.conapps.click
           SESSIONS_TABLE_NAME: ConappsSessions
           USERS_TABLE_NAME: ConappsUsers
           HELPERS_TABLE_NAME: ConappsHelpers

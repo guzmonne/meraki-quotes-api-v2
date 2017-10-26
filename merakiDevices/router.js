@@ -21,7 +21,7 @@ const key = {
 const body = {
   ID: Joi.string(),
   Description: Joi.string(),
-  Price: Joi.number(),
+  Price: Joi.number().min(0),
   ImageUrl: Joi.string().uri(),
   createdAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
   updatedAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),

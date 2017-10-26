@@ -15,8 +15,6 @@ exports = module.exports = (config) => (req, res) => {
     return;
   }
 
-  if (utils.isValid(config.key, key, res) === false) return;
-
   dynamo.delete({
     TableName: config.tableName,
     Key: key,
