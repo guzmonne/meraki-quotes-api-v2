@@ -85,7 +85,7 @@ function generateToken(user) {
 		TableName: SessionsTableName,
 		Item: item,
 	})
-	.promise()
+  .promise()
 	.then(() => ({token: jwt.compact()}))
 	.catch((err) => {
 		console.log(err.message);

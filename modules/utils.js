@@ -109,7 +109,7 @@ function UnexpectedInputError(message) {
 
 exports.btoj = function(encodedString) {
   try {
-    return JSON.parse(new Buffer(encodedString, 'base64').toString("ascii"));
+    return JSON.parse(new Buffer(encodedString, 'base64').toString("utf8"));
   } catch (err) {
     console.log('Enconded String:', encodedString);
     throw new UnexpectedInputError(err.message);
@@ -118,7 +118,7 @@ exports.btoj = function(encodedString) {
 
 exports.jtob = function(object) {
   try {
-    return new Buffer(JSON.stringify(object)).toString('base64')
+    return new Buffer(JSON.stringify(object), 'utf8').toString('base64')
   } catch (err) {
     console.log('Object:', object);
     throw new UnexpectedInputError(err.message);
