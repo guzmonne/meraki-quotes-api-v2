@@ -1,5 +1,6 @@
 'use strict';
 
+const Joi = require('joi');
 const dynamo = require('../modules/aws.js').DynamoDB;
 const utils = require('../modules/utils.js');
 
@@ -9,11 +10,20 @@ const defaultConfig = {
 
 exports = module.exports = (config) => (req, res) => {
   config = Object.assign({}, defaultConfig, config);
-  const body = req.body
 
-  if (utils.isValid(config.body, body, res) === false) return;
+  const validationResult = Joi.validate(req.body, config.body);
 
-  let key
+  if (validationResult.error !== null) {
+    res.status(400).json(validationResult.error);
+    return;
+  }
+
+  let key,
+      body = validationResult.value;
+
+  console.log(JSON.stringify(req.body, null, 2));
+  console.log(validationResult);
+
   try {
     key = utils.btoj(req.params.key);    
   } catch (error) {
@@ -39,6 +49,7 @@ exports = module.exports = (config) => (req, res) => {
   .promise()
 	.then((data) => {
     console.log(`${config.type} updated.`);
+    console.log(JSON.stringify(body, null, 2))
     res.status(202).send();
 	})
 	.catch(error => {

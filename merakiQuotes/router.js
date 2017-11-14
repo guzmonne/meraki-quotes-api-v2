@@ -23,7 +23,7 @@ const merakiQuotesDeviceSchema = Joi.object().keys(Object.assign({},
 
 const body = {
   AdminMargin: Joi.number().min(0).max(1),
-  DealApproved: Joi.bool().default(false),
+  DealApproved: Joi.bool(),
   ID: Joi.string().uuid({version: ['uuidv4', 'uuidv5']}),
   Description: Joi.string(),
   Devices: Joi.array().items(merakiQuotesDeviceSchema),
