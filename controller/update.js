@@ -37,7 +37,7 @@ exports = module.exports = (config) => (req, res) => {
 
   dynamo.update(params)
   .promise()
-	.then(() => {
+	.then((data) => {
     console.log(`${config.type} updated.`);
     res.status(202).send();
 	})

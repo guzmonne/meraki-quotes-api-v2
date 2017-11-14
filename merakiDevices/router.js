@@ -25,7 +25,7 @@ const body = {
   ImageUrl: Joi.string().uri(),
   createdAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
   updatedAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
-}
+};
 
 router.item = Object.assign({}, key, body);
 

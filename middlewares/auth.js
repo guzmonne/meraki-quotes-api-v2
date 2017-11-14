@@ -78,7 +78,7 @@ exports = module.exports = (req, res, next) => {
   .then((verifiedJwt) => {
     console.log('Token verified');
     req.user = {
-      ID: get(verifiedJwt, 'body.jti'),
+      ID: get(verifiedJwt, 'body.sub'),
       jti: get(verifiedJwt, 'body.jti'),
       username: get(verifiedJwt, 'body.username'),
       email: get(verifiedJwt, 'body.email'),

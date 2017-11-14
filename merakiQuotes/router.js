@@ -1,6 +1,7 @@
 'use strict';
 
 const Joi = require('joi');
+const dynamo = require('../modules/aws.js').DynamoDB;
 const controllerCreate = require('../controller/create.js');
 
 let router = require('express').Router();
@@ -65,7 +66,56 @@ const create = (req, res) => {
   controllerCreate(config)(req, res);
 }
 
-config.handlers = {create};
+const index = (req, res) => {
+  const query = req.query;
+  
+  const params = {
+    TableName: config.tableName,
+    KeyConditionExpression: '#UserID = :UserID',
+    ExpressionAttributeNames: {
+      '#UserID': 'UserID',
+      '#Name': 'Name',
+      '#Description': 'Description',
+      '#createdAt': 'createdAt',
+      '#updatedAt': 'updatedAt',
+      '#ID': 'ID',
+    },
+    ExpressionAttributeValues: {
+      ':UserID': req.user.ID,
+    },
+    Limit: query.limit || 10,
+    ProjectionExpression: [
+      '#UserID',
+      '#Name',
+      '#Description',
+      '#createdAt',
+      '#updatedAt',
+      '#ID',
+    ].join(','),
+    ScanIndexForward: false,
+  }
+
+  console.log(params);
+
+  if (query.offset)
+    params.ExclusiveStartKey = query.offset;
+
+  dynamo.query(params)
+  .promise()
+  .then((data) => {
+    console.log(`Got ${config.plural || config.type + 's'} list.`);
+    res.status(200).json(data.Items)
+  })
+  .catch(error => {
+    console.log(error.message);
+    res.status(400).json({
+      name: error.name,
+      message: error.message,
+    })
+  });
+}
+
+config.handlers = {create, index};
 
 router.use(require('../controller/createController.js')(config));
 
