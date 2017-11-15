@@ -16,8 +16,8 @@ const key = {
 const merakiQuotesDeviceSchema = Joi.object().keys(Object.assign({},
   merakiDevicesItem, 
   {
-    "Intro": Joi.number().min(0).max(1).default(0).required(),
-    "Qty": Joi.number().min(0).default(1).required(),
+    "Intro": Joi.number().min(0).max(1),
+    "Qty": Joi.number().min(0),
   }
 ));
 
