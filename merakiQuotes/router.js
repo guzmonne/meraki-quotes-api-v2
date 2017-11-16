@@ -10,7 +10,7 @@ const merakiDevicesItem = require('../merakiDevices/router.js').item;
 
 const key = {
   UserID: Joi.string().required(),
-  createdAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()).options({ convert: false }),
+  createdAt: Joi.alternatives().try(Joi.string(), Joi.number()),
 };
 
 const merakiQuotesDeviceSchema = Joi.object().keys(Object.assign({},
