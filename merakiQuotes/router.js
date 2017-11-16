@@ -16,8 +16,8 @@ const key = {
 const merakiQuotesDeviceSchema = Joi.object().keys(Object.assign({},
   merakiDevicesItem, 
   {
-    "Intro": Joi.number().min(0).max(1),
-    "Qty": Joi.number().min(0),
+    Intro: Joi.number().min(0).max(1),
+    Qty: Joi.number().min(0),
   }
 ));
 
@@ -94,8 +94,6 @@ const index = (req, res) => {
     ].join(','),
     ScanIndexForward: false,
   }
-
-  console.log(params);
 
   if (query.offset)
     params.ExclusiveStartKey = query.offset;

@@ -21,9 +21,6 @@ exports = module.exports = (config) => (req, res) => {
   let key,
       body = validationResult.value;
 
-  console.log(JSON.stringify(req.body, null, 2));
-  console.log(validationResult);
-
   try {
     key = utils.btoj(req.params.key);    
   } catch (error) {
@@ -39,6 +36,9 @@ exports = module.exports = (config) => (req, res) => {
 
   delete body[config.hash];
   delete body[config.range];
+  delete body.createdAt;
+
+  console.log(body);
 
   const params = Object.assign({
     TableName: config.tableName,
@@ -49,7 +49,6 @@ exports = module.exports = (config) => (req, res) => {
   .promise()
 	.then((data) => {
     console.log(`${config.type} updated.`);
-    console.log(JSON.stringify(body, null, 2))
     res.status(202).send();
 	})
 	.catch(error => {
