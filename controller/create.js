@@ -51,8 +51,15 @@ exports = module.exports = (config) => (req, res) => {
     .promise();
   })
 	.then(() => {
-		console.log(`${config.type} created.`);
-		res.status(200).json({ID: body.ID});
+    console.log(`${config.type} created.`);
+    const key = {
+      [config.hash]: body[config.hash],
+    };
+
+    if (config.range)
+      key[config.range] = body[config.range];
+
+		res.status(200).json(key);
 	})
 	.catch(error => {
 		console.log(error.message);
