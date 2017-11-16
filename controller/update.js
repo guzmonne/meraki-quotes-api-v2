@@ -11,7 +11,10 @@ const defaultConfig = {
 exports = module.exports = (config) => (req, res) => {
   config = Object.assign({}, defaultConfig, config);
 
-  const validationResult = Joi.validate(req.body, config.body);
+  const validationResult = Joi.validate(
+    Object.assign({}, req.body),
+    config.body
+  );
 
   if (validationResult.error !== null) {
     res.status(400).json(validationResult.error);
@@ -37,8 +40,6 @@ exports = module.exports = (config) => (req, res) => {
   delete body[config.hash];
   delete body[config.range];
   delete body.createdAt;
-
-  console.log(body);
 
   const params = Object.assign({
     TableName: config.tableName,

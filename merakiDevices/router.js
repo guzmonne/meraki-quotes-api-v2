@@ -23,8 +23,8 @@ const body = {
   Description: Joi.string(),
   Price: Joi.number().min(0),
   ImageUrl: Joi.string().uri(),
-  createdAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
-  updatedAt: Joi.alternatives().try(Joi.date().timestamp(), Joi.date().iso()),
+  createdAt: Joi.alternatives().try(Joi.string(), Joi.number()),
+  updatedAt: Joi.alternatives().try(Joi.string(), Joi.number()),
 };
 
 router.item = Object.assign({}, key, body);
