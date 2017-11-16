@@ -11,7 +11,7 @@ exports = module.exports = (keySchema) => (req, res, next) => {
   let query = req.query || {};
   
   const schema = Joi.object().keys({
-    limit: Joi.number().max(100),
+    limit: Joi.number().max(1000),
     offset: keySchema,
   });
 
