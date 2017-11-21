@@ -10,7 +10,7 @@ const categories = [
   'SME',
   'UTM',
   'Video',
-  'Accesories'
+  'Accessories'
 ];
 
 const key = {
