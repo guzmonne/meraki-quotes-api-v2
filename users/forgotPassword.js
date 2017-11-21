@@ -8,6 +8,7 @@ const dynamo = require('../modules/aws.js').DynamoDB;
 const utils = require('../modules/utils.js');
 
 const TABLE_NAME = process.env.USERS_TABLE_NAME;
+const TEN_MINUTES_IN_MS = 1000 * 60 * 10;
 
 const schema = Joi.object().keys({
   email: Joi.string().email().required(),
@@ -37,20 +38,22 @@ exports = module.exports = (req, res) => {
         return;
       }
       console.log('User found.');
-      return utils.computeHash(uuid.v4(), user.passwordSalt);
+      return uuid.v4();
     })
-    .then(({hash}) => {
+    .then((hash) => {
       console.log('Created forgot password code');
       forgotPasswordCode = hash;
       return dynamo.update({
         TableName: TABLE_NAME,
         Key: { email },
-        UpdateExpression: 'set #forgotPasswordCode = :forgotPasswordCode',
+        UpdateExpression: 'set #fPC = :fPC, #fPCE = :fPCE',
         ExpressionAttributeNames: {
-          '#forgotPasswordCode': 'ForgotPasswordCode',
+          '#fPC': 'ForgotPasswordCode',
+          '#fPCE': 'ForgotPasswordCodeExpiration'
         },
         ExpressionAttributeValues: {
-          ':forgotPasswordCode': forgotPasswordCode,
+          ':fPC': forgotPasswordCode,
+          ':fPCE': Date.now() + TEN_MINUTES_IN_MS,
         }
       }).promise();
     })
@@ -86,9 +89,10 @@ function emailTemplate(subject, forgotPasswordCode, email) {
   <body>
     <h1>CONAPPS - Recuperar contraseña</h1>
     <p>Ingrese al siguiente link para recuperar su contraseña:</p>
-    <a href="https://www.conapps.click/recoverPassword?forgotPasswordCode=${forgotPasswordCode}email=${email}">
-      https://www.conapps.click/recoverPassword?forgotPasswordCode=${forgotPasswordCode}email=${email}
+    <a href="https://www.conapps.click/recoverPassword?forgotPasswordCode=${forgotPasswordCode}&email=${email}">
+      https://www.conapps.click/recoverPassword?forgotPasswordCode=${forgotPasswordCode}&email=${email}
     </a>
+    <p>Este codigo permanecera valido por 10 minutos.</p>
     <br />
     <br />
     <p>Contacte con el <a mailto="aws@conatel.com.uy">Administrador</a> del sistema por cualquier inconveniente.</p>

@@ -10,7 +10,8 @@ const utils = require('../modules/utils.js');
 const TABLE_NAME = process.env.USERS_TABLE_NAME;
 
 const schema = Joi.object().keys({
-  password: Joi.string().email().required(),
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
   forgotPasswordCode: Joi.string().required(),
 });
 
@@ -40,31 +41,30 @@ exports = module.exports = (req, res) => {
         return;
       }
       console.log('User found.');
-      if (user.ForgotPasswordCode !== forgotPasswordCode)
+      if (
+        user.ForgotPasswordCodeExpiration > Date.now() &&
+        user.ForgotPasswordCode !== forgotPasswordCode 
+      )
         throw new utils.ForgotPasswordCodeMismatchError();
       return utils.computeHash(password);
-    })
-    .then((result) => {
-      if (result.hash !== user.passwordHash) {
-        throw new utils.IncorrectPasswordError();
-      }
-      return utils.computeHash(newPassword);
     })
     .then((result) => {
       console.log('Calculated new salt and hash');
       return dynamo.update({
         TableName: TABLE_NAME,
         Key: { email },
-        UpdateExpression: 'set #pS = :pS, #pH = :pH, #uA = :uA',
+        UpdateExpression: 'set #pS = :pS, #pH = :pH, #uA = :uA, #fPCE = :fPCE',
         ExpressionAttributeNames: {
           '#pS': 'passwordSalt',
           '#pH': 'passwordHash',
           '#uA': 'updatedAt',
+          '#fPCE': 'ForgotPasswordCodeExpiration',
         },
         ExpressionAttributeValues: {
           ':pS': result.salt,
           ':pH': result.hash,
           ':uA': Date.now(),
+          ':fPCE': 0,
         }
       }).promise();
     })
