@@ -26,8 +26,10 @@
     "uuid": "^3.1.0"
   },
   "devDependencies": {
+    "csvtojson": "^1.1.9",
     "jest": "^21.2.1",
     "node-fetch": "^1.7.3",
-    "nodemon": "^1.12.1"
+    "nodemon": "^1.12.1",
+    "rxjs": "^5.5.2"
   }
 }
