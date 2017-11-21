@@ -42,13 +42,13 @@ csv()
       .startWith(-1)
       .map(i => items[i + 1])
       .map(item => {
-        let Price = get(item, 'Price', '0');
+        let Price = get(item, 'Price', 0);
         if (isString(Price)) {
           Price = Price.replace('.00', '');
           Price = Price.replace(',', '');
           Price = parseFloat(Price, 10);
         }
-        return Object.assign(item, {Price});
+        return Object.assign(item, {Price: Price || 0});
       })
       .do(({PartNumber, Category, Description, Price}) => (
         console.log([PartNumber, Category, Description, Price].join('\t'))
@@ -66,7 +66,7 @@ csv()
       })
       .scan((index) => index += 1, 0)
       .subscribe(
-        (index) => console.log(`Item #${index} done.`),
+        (index) => {},
         logError,
         () => console.log('DONE\n====\n')
       );
