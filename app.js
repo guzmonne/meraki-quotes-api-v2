@@ -10,20 +10,7 @@ app.use(bodyParser.json());
 
 app.use(cors());
 
-app.use('/users', require('./users/router.js'));
-
-app.use(require('./middlewares/auth.js'));
-
-app.use('/merakiDevices', require('./merakiDevices/router.js'));
-
-app.use('/merakiQuotes', require('./merakiQuotes/router.js'));
-
-app.use((req, res) => {
-  res.status(404).json({
-    name: 'NotFound',
-    message: 'Endpoint not found'
-  })
-})
+app.use('/v1', require('./v1.js'));
 
 // Export your Express configuration so that it can be consumed by the Lambda // handler
 module.exports = app
