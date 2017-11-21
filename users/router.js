@@ -13,6 +13,10 @@ router.post('/login', require('./login.js'));
 
 router.get('/verify', require('./verify.js'));
 
+router.post('/forgotPassword', require('./forgotPassword.js'));
+
+router.post('/recoverPassword', require('./recoverPassword.js'));
+
 router.use(require('../middlewares/auth.js'));
 
 router.use('/active', require('./active.js'));

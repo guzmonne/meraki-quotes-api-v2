@@ -101,6 +101,12 @@ exports.ElementDoesNotExistsError = function(type, key) {
   this.key = key;
 }
 
+exports.ForgotPasswordCodeMismatchError = function() {
+  this.name = 'ForgotPasswordCodeMismatch';
+  this.message = `ForgotPasswordCode does not match`;
+  this.stack = (new Error()).stack;
+}
+
 function UnexpectedInputError(message) {
 	this.name = 'UnexpectedInput';
 	this.message = message || 'The encoded string is not a valid base64 string.';
